@@ -1,3 +1,6 @@
+// Suppress warnings
+#![allow(mutable_transmutes)]
+#![allow(static_mut_refs)]
 #![doc(html_root_url = "https://docs.rs/libffi/3.2.0")]
 //! Rust bindings for [libffi](https://sourceware.org/libffi/).
 //!
@@ -76,7 +79,7 @@
 //! let f = |y: u64, z: u64| x + y + z;
 //!
 //! let closure = Closure2::new(&f);
-//! let fun     = closure.code_ptr();
+//! let fun = closure.code_ptr();
 //!
 //! assert_eq!(18, fun.call(6, 7));
 //! ```
@@ -84,7 +87,6 @@
 //! [the `libffi-sys` crate]: https://crates.io/crates/libffi-sys/
 //!
 //! [the `libffi-sys` documentation]: https://docs.rs/libffi-sys/#usage
-//!
 
 #![deny(missing_docs)]
 
