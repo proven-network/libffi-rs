@@ -20,3 +20,6 @@ system = ["libffi-sys/system"]
 
 [package.metadata.docs.rs]
 features = ["system"]
+
+[lints.clippy]
+all = "allow"
