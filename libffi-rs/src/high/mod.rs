@@ -36,7 +36,10 @@
 //! use libffi::high::ClosureMut1;
 //!
 //! let mut x = 0u64;
-//! let mut f = |y: u32| { x += y as u64; x };
+//! let mut f = |y: u32| {
+//!     x += y as u64;
+//!     x
+//! };
 //!
 //! let closure = ClosureMut1::new(&mut f);
 //! let counter = closure.code_ptr();
@@ -56,9 +59,7 @@
 //! use libffi::high::ClosureOnce3;
 //!
 //! let v = vec![1, 2, 3, 4, 5];
-//! let mut f = move |x: usize, y: usize, z: usize| {
-//!     v[x] + v[y] + v[z]
-//! };
+//! let mut f = move |x: usize, y: usize, z: usize| v[x] + v[y] + v[z];
 //!
 //! let closure = ClosureOnce3::new(f);
 //! let call = closure.code_ptr();

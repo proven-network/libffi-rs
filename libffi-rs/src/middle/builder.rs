@@ -24,15 +24,15 @@ use super::types::Type;
 /// use std::mem;
 /// use std::os::raw::c_void;
 ///
-/// use libffi::middle::*;
 /// use libffi::low;
+/// use libffi::middle::*;
 ///
 /// unsafe extern "C" fn lambda_callback<F: Fn(u64, u64) -> u64>(
 ///     _cif: &low::ffi_cif,
 ///     result: &mut u64,
 ///     args: *const *const c_void,
-///     userdata: &F)
-/// {
+///     userdata: &F,
+/// ) {
 ///     let args: *const &u64 = mem::transmute(args);
 ///     let arg1 = **args.offset(0);
 ///     let arg2 = **args.offset(1);
@@ -49,8 +49,7 @@ use super::types::Type;
 ///     .into_closure(lambda_callback, &lambda);
 ///
 /// unsafe {
-///     let fun: &unsafe extern "C" fn(u64, u64) -> u64
-///         = mem::transmute(closure.code_ptr());
+///     let fun: &unsafe extern "C" fn(u64, u64) -> u64 = mem::transmute(closure.code_ptr());
 ///
 ///     assert_eq!(11, fun(5, 6));
 ///     assert_eq!(12, fun(5, 7));

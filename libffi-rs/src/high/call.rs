@@ -12,7 +12,9 @@
 //!
 //! use libffi::ffi_call;
 //!
-//! let result = unsafe { ffi_call!{ hypot(3f32, 4f32) -> f32 } };
+//! let result = unsafe {
+//!     ffi_call! { hypot(3f32, 4f32) -> f32 }
+//! };
 //!
 //! assert!((result - 5f32).abs() < 0.0001);
 //! ```
@@ -68,9 +70,7 @@ pub fn arg<T: super::CType>(arg: &T) -> Arg {
 ///
 /// use libffi::high::call::*;
 ///
-/// let result = unsafe {
-///     call::<f32>(CodePtr(hypot as *mut _), &[arg(&3f32), arg(&4f32)])
-/// };
+/// let result = unsafe { call::<f32>(CodePtr(hypot as *mut _), &[arg(&3f32), arg(&4f32)]) };
 ///
 /// assert!((result - 5f32).abs() < 0.0001);
 /// ```
@@ -103,7 +103,9 @@ pub unsafe fn call<R: super::CType>(fun: CodePtr, args: &[Arg]) -> R {
 ///
 /// use libffi::ffi_call;
 ///
-/// let result = unsafe { ffi_call!{ hypot(3f32, 4f32) -> f32 } };
+/// let result = unsafe {
+///     ffi_call! { hypot(3f32, 4f32) -> f32 }
+/// };
 ///
 /// assert!((result - 5f32).abs() < 0.0001);
 /// ```

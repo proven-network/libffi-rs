@@ -176,13 +176,15 @@ pub mod types {
 /// `ffi_type` as follows using `type_tag::STRUCT`:
 ///
 /// ```
+/// use libffi::low::{ffi_type, type_tag, types};
 /// use std::ptr;
-/// use libffi::low::{ffi_type, types, type_tag};
 ///
 /// let mut elements = unsafe {
-///     [ &mut types::uint16,
-///       &mut types::uint64,
-///       ptr::null_mut::<ffi_type>() ]
+///     [
+///         &mut types::uint16,
+///         &mut types::uint64,
+///         ptr::null_mut::<ffi_type>(),
+///     ]
 /// };
 ///
 /// let mut my_struct: ffi_type = Default::default();
@@ -235,16 +237,19 @@ pub mod type_tag {
 /// ```
 /// use libffi::low::*;
 ///
-/// let mut args: [*mut ffi_type; 2] = unsafe {
-///     [ &mut types::sint32,
-///       &mut types::uint64 ]
-/// };
+/// let mut args: [*mut ffi_type; 2] = unsafe { [&mut types::sint32, &mut types::uint64] };
 /// let mut cif: ffi_cif = Default::default();
 ///
 /// unsafe {
-///     prep_cif(&mut cif, ffi_abi_FFI_DEFAULT_ABI, 2,
-///              &mut types::pointer, args.as_mut_ptr())
-/// }.unwrap();
+///     prep_cif(
+///         &mut cif,
+///         ffi_abi_FFI_DEFAULT_ABI,
+///         2,
+///         &mut types::pointer,
+///         args.as_mut_ptr(),
+///     )
+/// }
+/// .unwrap();
 /// ```
 pub unsafe fn prep_cif(
     cif: *mut ffi_cif,
@@ -283,7 +288,6 @@ pub unsafe fn prep_cif(
 /// # Result
 ///
 /// `Ok(())` for success or `Err(e)` for failure.
-///
 pub unsafe fn prep_cif_var(
     cif: *mut ffi_cif,
     abi: ffi_abi,
@@ -319,22 +323,35 @@ pub unsafe fn prep_cif_var(
 /// # Examples
 ///
 /// ```
-/// use std::os::raw::c_void;
 /// use libffi::low::*;
+/// use std::os::raw::c_void;
 ///
-/// extern "C" fn c_function(a: u64, b: u64) -> u64 { a + b }
+/// extern "C" fn c_function(a: u64, b: u64) -> u64 {
+///     a + b
+/// }
 ///
 /// let result = unsafe {
-///     let mut args: Vec<*mut ffi_type> = vec![ &mut types::uint64,
-///                                              &mut types::uint64 ];
+///     let mut args: Vec<*mut ffi_type> = vec![&mut types::uint64, &mut types::uint64];
 ///     let mut cif: ffi_cif = Default::default();
 ///
-///     prep_cif(&mut cif, ffi_abi_FFI_DEFAULT_ABI, 2,
-///              &mut types::uint64, args.as_mut_ptr()).unwrap();
+///     prep_cif(
+///         &mut cif,
+///         ffi_abi_FFI_DEFAULT_ABI,
+///         2,
+///         &mut types::uint64,
+///         args.as_mut_ptr(),
+///     )
+///     .unwrap();
 ///
-///     call::<u64>(&mut cif, CodePtr(c_function as *mut _),
-///          vec![ &mut 4u64 as *mut _ as *mut c_void,
-///                &mut 5u64 as *mut _ as *mut c_void ].as_mut_ptr())
+///     call::<u64>(
+///         &mut cif,
+///         CodePtr(c_function as *mut _),
+///         vec![
+///             &mut 4u64 as *mut _ as *mut c_void,
+///             &mut 5u64 as *mut _ as *mut c_void,
+///         ]
+///         .as_mut_ptr(),
+///     )
 /// };
 ///
 /// assert_eq!(9, result);
@@ -467,11 +484,12 @@ pub type RawCallback = unsafe extern "C" fn(
 /// use std::mem;
 /// use std::os::raw::c_void;
 ///
-/// unsafe extern "C" fn callback(_cif: &ffi_cif,
-///                               result: &mut u64,
-///                               args: *const *const c_void,
-///                               userdata: &u64)
-/// {
+/// unsafe extern "C" fn callback(
+///     _cif: &ffi_cif,
+///     result: &mut u64,
+///     args: *const *const c_void,
+///     userdata: &u64,
+/// ) {
 ///     let args: *const &u64 = mem::transmute(args);
 ///     *result = **args + *userdata;
 /// }
@@ -485,17 +503,26 @@ pub type RawCallback = unsafe extern "C" fn(
 ///     let mut args = [&mut types::uint64 as *mut _];
 ///     let mut userdata: u64 = 5;
 ///
-///     prep_cif(&mut cif, ffi_abi_FFI_DEFAULT_ABI, 1, &mut types::uint64,
-///              args.as_mut_ptr()).unwrap();
+///     prep_cif(
+///         &mut cif,
+///         ffi_abi_FFI_DEFAULT_ABI,
+///         1,
+///         &mut types::uint64,
+///         args.as_mut_ptr(),
+///     )
+///     .unwrap();
 ///
 ///     let (closure, code) = closure_alloc();
 ///     let add5: extern "C" fn(u64) -> u64 = mem::transmute(code);
 ///
-///     prep_closure(closure,
-///                  &mut cif,
-///                  callback,
-///                  &mut userdata,
-///                  CodePtr(add5 as *mut _)).unwrap();
+///     prep_closure(
+///         closure,
+///         &mut cif,
+///         callback,
+///         &mut userdata,
+///         CodePtr(add5 as *mut _),
+///     )
+///     .unwrap();
 ///
 ///     assert_eq!(11, add5(6));
 ///     assert_eq!(12, add5(7));
@@ -559,11 +586,12 @@ pub unsafe fn prep_closure<U, R>(
 /// use std::mem;
 /// use std::os::raw::c_void;
 ///
-/// unsafe extern "C" fn callback(_cif: &ffi_cif,
-///                               result: &mut u64,
-///                               args: *const *const c_void,
-///                               userdata: &mut u64)
-/// {
+/// unsafe extern "C" fn callback(
+///     _cif: &ffi_cif,
+///     result: &mut u64,
+///     args: *const *const c_void,
+///     userdata: &mut u64,
+/// ) {
 ///     let args: *const &u64 = mem::transmute(args);
 ///     *result = *userdata;
 ///     *userdata += **args;
@@ -578,17 +606,26 @@ pub unsafe fn prep_closure<U, R>(
 ///     let mut args = [&mut types::uint64 as *mut _];
 ///     let mut userdata: u64 = 5;
 ///
-///     prep_cif(&mut cif, ffi_abi_FFI_DEFAULT_ABI, 1, &mut types::uint64,
-///              args.as_mut_ptr()).unwrap();
+///     prep_cif(
+///         &mut cif,
+///         ffi_abi_FFI_DEFAULT_ABI,
+///         1,
+///         &mut types::uint64,
+///         args.as_mut_ptr(),
+///     )
+///     .unwrap();
 ///
 ///     let (closure, code) = closure_alloc();
 ///     let add5: extern "C" fn(u64) -> u64 = mem::transmute(code);
 ///
-///     prep_closure_mut(closure,
-///                      &mut cif,
-///                      callback,
-///                      &mut userdata,
-///                      CodePtr(add5 as *mut _)).unwrap();
+///     prep_closure_mut(
+///         closure,
+///         &mut cif,
+///         callback,
+///         &mut userdata,
+///         CodePtr(add5 as *mut _),
+///     )
+///     .unwrap();
 ///
 ///     assert_eq!(5, add5(6));
 ///     assert_eq!(11, add5(7));

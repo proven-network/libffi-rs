@@ -45,10 +45,7 @@ type Owned<T> = T;
 /// ```
 /// use libffi::middle::Type;
 ///
-/// let my_struct = Type::structure(vec![
-///     Type::u64(),
-///     Type::u16(),
-/// ]);
+/// let my_struct = Type::structure(vec![Type::u64(), Type::u16()]);
 /// ```
 pub struct Type(Unique<low::ffi_type>);
 

@@ -195,15 +195,15 @@ impl Cif {
 /// use std::mem;
 /// use std::os::raw::c_void;
 ///
-/// use libffi::middle::*;
 /// use libffi::low;
+/// use libffi::middle::*;
 ///
 /// unsafe extern "C" fn lambda_callback<F: Fn(u64, u64) -> u64>(
 ///     _cif: &low::ffi_cif,
 ///     result: &mut u64,
 ///     args: *const *const c_void,
-///     userdata: &F)
-/// {
+///     userdata: &F,
+/// ) {
 ///     let args = args as *const &u64;
 ///     let arg1 = **args.offset(0);
 ///     let arg2 = **args.offset(1);
@@ -211,14 +211,11 @@ impl Cif {
 ///     *result = userdata(arg1, arg2);
 /// }
 ///
-/// let cif = Cif::new(vec![Type::u64(), Type::u64()].into_iter(),
-///                    Type::u64());
+/// let cif = Cif::new(vec![Type::u64(), Type::u64()].into_iter(), Type::u64());
 /// let lambda = |x: u64, y: u64| x + y;
 /// let closure = Closure::new(cif, lambda_callback, &lambda);
 ///
-/// let fun: &extern "C" fn(u64, u64) -> u64 = unsafe {
-///     closure.instantiate_code_ptr()
-/// };
+/// let fun: &extern "C" fn(u64, u64) -> u64 = unsafe { closure.instantiate_code_ptr() };
 ///
 /// assert_eq!(11, fun(5, 6));
 /// assert_eq!(12, fun(5, 7));
